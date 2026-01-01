@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy New Year 2026 🎆</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Segoe UI,sans-serif;
+  background:radial-gradient(circle at top,#240046,#050008);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+  overflow:hidden;
+}
+
+.section{
+  display:none;
+  width:100%;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.section.active{
+  display:flex;
+  animation:fadeUp .8s ease;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(14px);
+  border-radius:24px;
+  padding:35px 25px;
+  max-width:420px;
+  width:100%;
+  text-align:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.6);
+}
+
+h1{
+  font-size:2.2em;
+  margin-bottom:15px;
+  background:linear-gradient(45deg,#ffd700,#ff7a18);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+p{opacity:.9;font-size:1.05em;margin-bottom:18px}
+
+input,textarea{
+  width:100%;
+  padding:14px;
+  margin:12px 0;
+  border:none;
+  border-radius:14px;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:1em;
+}
+
+textarea{min-height:110px;resize:none}
+
+button{
+  background:linear-gradient(45deg,#ffd700,#ff7a18);
+  color:#000;
+  border:none;
+  padding:14px 36px;
+  border-radius:40px;
+  font-size:1.05em;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:15px;
+  transition:.3s;
+}
+button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 35px rgba(255,215,0,.6);
+}
+
+.emoji{
+  font-size:70px;
+  animation:bounce 1.6s infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+/* CONFETTI */
+.confetti{
+  position:fixed;
+  width:10px;
+  height:10px;
+  top:-10px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(360deg)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAME -->
+<div class="section active" id="nameSection">
+  <div class="card">
+    <div class="emoji">🎁</div>
+    <h1>Welcome</h1>
+    <p>See what <b>Sourav</b> sent you ✨</p>
+    <input id="nameInput" placeholder="Enter your name">
+    <button onclick="openGreeting()">Open Gift Form</button>
+  </div>
+</div>
+
+<!-- GREETING -->
+<div class="section" id="greetSection">
+  <div class="card">
+    <h1>Happy New Year 2026 🎆</h1>
+    <p id="greetText"></p>
+    <button onclick="openGoals()">Continue ✨</button>
+  </div>
+</div>
+
+<!-- GOALS -->
+<div class="section" id="goalsSection">
+  <div class="card">
+    <h1>Your 2026 Goals 🌟</h1>
+    <textarea id="goals" placeholder="Your goals for 2026..."></textarea>
+    <input id="song" placeholder="Song URL (optional)">
+    <button onclick="openMessage()">Next 💬</button>
+  </div>
+</div>
+
+<!-- MESSAGE -->
+<div class="section" id="messageSection">
+  <div class="card">
+    <h1>Message for Sourav 💌</h1>
+    <textarea id="message" placeholder="Write a personal message for Sourav..."></textarea>
+    <button onclick="submitAll()">Submit 🎉</button>
+  </div>
+</div>
+
+<!-- THANK YOU -->
+<div class="section" id="thankSection">
+  <div class="card">
+    <div class="emoji">🎊</div>
+    <h1>Thank You!</h1>
+    <p>
+      Your response has been saved successfully 💛<br><br>
+      May 2026 bring you happiness, growth & success ✨
+    </p>
+  </div>
+</div>
+
+<script>
+/* 🔗 YOUR GOOGLE APPS SCRIPT URL */
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbxpoQvd1V-9YBzapkh4UQfPozmg7m1zQ5E9MIxTOW1NxdrUZ6n82tquRkSZLwWNB5SSzQ/exec";
+
+let userName="";
+let confettiTimer;
+
+function switchSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function openGreeting(){
+  userName=document.getElementById("nameInput").value.trim();
+  if(!userName){alert("Please enter your name");return;}
+  document.getElementById("greetText").innerHTML=
+    `Dear <b>${userName}</b>,<br><br>
+     Wishing you strength, clarity & success in 2026 🌟`;
+  switchSection("greetSection");
+  startConfetti();
+}
+
+function openGoals(){
+  switchSection("goalsSection");
+}
+
+function openMessage(){
+  switchSection("messageSection");
+}
+
+function submitAll(){
+  fetch(WEB_APP_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      name:userName,
+      goals:document.getElementById("goals").value,
+      song:document.getElementById("song").value,
+      message:document.getElementById("message").value
+    }),
+    headers:{"Content-Type":"text/plain"},
+    mode:"no-cors"
+  });
+
+  stopConfetti();
+  switchSection("thankSection");
+}
+
+/* CONFETTI */
+function startConfetti(){
+  confettiTimer=setInterval(()=>{
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=["#ffd700","#ff7a18","#ff4d6d"][Math.floor(Math.random()*3)];
+    c.style.animationDuration=(Math.random()*3+2)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+  },120);
+}
+function stopConfetti(){
+  clearInterval(confettiTimer);
+}
+</script>
+
+</body>
+</html>
